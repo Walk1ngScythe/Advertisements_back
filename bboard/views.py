@@ -1,51 +1,23 @@
-from django.views.generic.edit import CreateView
-from .forms import BbForm, SearchForm
+from rest_framework import viewsets
+from rest_framework.response import Response
 from .models import Bb, Rubric
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from .serializers import BbSerializer, RubricSerializer
 
 
-def index(request):
-    bbs = Bb.objects.all()  # По умолчанию показываем все объявления
-    rubrics = Rubric.objects.all()
-    query = request.GET.get('query', '')  # Получаем текст для поиска из параметров GET
+class BbViewSet(viewsets.ModelViewSet):
+    serializer_class = BbSerializer
+    queryset = Bb.objects.all()
+    http_method_names = ['get']  # Только метод GET разрешен для этого ViewSet
 
-    if query:
-        # Если есть запрос, фильтруем объявления по названию
-        bbs = bbs.filter(title__icontains=query)
+    def get_queryset(self):
+        query = self.request.GET.get('query', '')
+        if query:
+            return Bb.objects.filter(title__icontains=query)
+        return Bb.objects.all()
 
-    context = {
-        'bbs': bbs,
-        'rubrics': rubrics,
-        'query': query,  # Передаем текст поискового запроса
-    }
 
-    return render(request, 'bboard/index.html', context)
+class RubricViewSet(viewsets.ModelViewSet):
+    serializer_class = RubricSerializer
+    queryset = Rubric.objects.all()
+    http_method_names = ['get']  # Только метод GET разрешен для этого ViewSet
 
-def rubric_bbs(request, rubric_id):
-    bbs = Bb.objects.filter(rubric_id=rubric_id)  # Фильтруем по рубрике
-    rubrics = Rubric.objects.all()
-    query = request.GET.get('query', '')  # Получаем текст для поиска из параметров GET
-
-    if query:
-        # Если есть запрос, фильтруем объявления по названию в выбранной рубрике
-        bbs = bbs.filter(title__icontains=query)
-
-    current_rubric = Rubric.objects.get(pk=rubric_id)
-    context = {
-        'bbs': bbs,
-        'rubrics': rubrics,
-        'current_rubric': current_rubric,  # Передаем текущую рубрику
-        'query': query,  # Передаем текст поискового запроса
-    }
-    return render(request, 'bboard/rubric_bbs.html', context)
-
-class BbCreateView(CreateView):
-    template_name = 'bboard/bb_create.html'
-    form_class = BbForm
-    success_url = reverse_lazy('index')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['rubrics'] = Rubric.objects.all()
-        return context

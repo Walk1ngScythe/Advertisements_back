@@ -1,9 +1,8 @@
-from django.urls import path
-from .views import index, rubric_bbs, BbCreateView
+from rest_framework.routers import DefaultRouter
+from .views import BbViewSet, RubricViewSet
 
-urlpatterns = [
-    path('', index, name = 'index'),
-    path('<int:rubric_id>/', rubric_bbs, name = 'rubric_bbs'),
-    path('add', BbCreateView.as_view(), name='add'),
+router = DefaultRouter()
+router.register(r'bbs', BbViewSet, basename='bb')
+router.register(r'rubrics', RubricViewSet, basename='rubric')
 
-]
+urlpatterns = router.urls
