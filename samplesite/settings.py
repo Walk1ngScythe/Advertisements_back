@@ -60,8 +60,29 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'samplesite.urls'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:4200',  # Angular dev server
+    "http://localhost:4200",
+    'http://localhost:8000'
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-xsrf-token',
+    'x-csrftoken',
+    'enctype',
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+ALLOWED_HOSTS = ['http://localhost:4200', 'localhost', 'localhost:8000', '127.0.0.1', 'http://localhost:8000']
 
 TEMPLATES = [
     {
