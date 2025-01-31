@@ -37,6 +37,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE, null=True, blank=True, verbose_name="Компания")
 
     USERNAME_FIELD = 'phone_number'  # Используем номер телефона в качестве имени пользователя
     REQUIRED_FIELDS = ['email']  # Остальные обязательные поля при создании суперпользователя
@@ -61,3 +62,15 @@ class Role(models.Model):
     class Meta:
         verbose_name = "Роль"
         verbose_name_plural = "Роли"
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=50, unique=True, verbose_name="Компания")
+    description = models.TextField(blank=True, verbose_name="Описание компании")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Компания"
+        verbose_name_plural = "Компании"

@@ -1,6 +1,6 @@
 # models.py для объявлений
 from django.db import models
-from persons.models import CustomUser  # Импортируем модель пользователя
+from users.models import CustomUser  # Импортируем модель пользователя
 
 class Bb(models.Model):
     title = models.CharField(max_length=50, verbose_name='Название')

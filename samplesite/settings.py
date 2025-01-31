@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-v_@^6dom7g$t#10^wiw#-=u29%&g6&0*@)rc=k+bi86mog0&t2
 DEBUG = True
 
 ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'persons.CustomUser'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Application definition
 
@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bboard',
-    "rest_framework",
     'corsheaders',
-    'persons'
+    'users',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'samplesite.urls'

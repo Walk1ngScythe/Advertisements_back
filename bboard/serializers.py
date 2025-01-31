@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from persons.models import CustomUser
+from users.models import CustomUser
+from users.serializers import CompanySerializer
 from .models import Bb, Rubric, BbImage
 
 class RubricSerializer(serializers.ModelSerializer):
@@ -13,9 +14,10 @@ class BbImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']  # Поля изображения
 
 class BbAuthorSerializer(serializers.ModelSerializer):
+    company = CompanySerializer(many=False, read_only=True)
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'rating']  # Информация о пользователе-авторе
+        fields = ['first_name', 'last_name', 'rating','company']  # Информация о пользователе-авторе
 
 class BbSerializer(serializers.ModelSerializer):
     rubric = RubricSerializer(many=False, read_only=True)
