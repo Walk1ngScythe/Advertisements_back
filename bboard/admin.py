@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Bb, Rubric
+from .models import Bb, Rubric, BbImage
 
 class BbAdmin (admin.ModelAdmin):
     list_display = ('rubric', 'title', 'content', 'price', 'published')
@@ -8,3 +8,4 @@ class BbAdmin (admin.ModelAdmin):
 
 admin.site.register(Bb, BbAdmin)
 admin.site.register(Rubric)
+admin.site.register(BbImage)
