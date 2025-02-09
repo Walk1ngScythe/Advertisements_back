@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import CustomUser, Role, Company
+from .models import CustomUser, Role, Company, Review
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -20,11 +20,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = [
+        fields = ['id',
             'first_name', 'last_name', 'phone_number', 'email', 'registration_date',
             'rating', 'avatar', 'company', 'role'
         ]
 
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField(read_only=True)  # Показываем имя автора
+    seller = serializers.StringRelatedField(read_only=True)  # Показываем имя продавца
+
+    class Meta:
+        model = Review
+        fields = ['id', 'seller', 'author', 'ad', 'rating', 'comment', 'created_at']
 
 class PublicUserSerializer(serializers.ModelSerializer):
     company = CompanySerializer(many=False, read_only=True)

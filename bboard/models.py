@@ -9,12 +9,14 @@ class Bb(models.Model):
     published = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Опубликовано')
     rubric = models.ForeignKey('Rubric', null=True, on_delete=models.PROTECT, verbose_name='Рубрика')
     main_image = models.ImageField(upload_to='Bb_images/', null=True, blank=True, verbose_name='Изображение')
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор')  # Добавляем автора
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор')
+    views = models.PositiveIntegerField(default=0, verbose_name='Просмотры')  # Добавлено поле
 
     class Meta:
         verbose_name_plural = 'Объявления'
         verbose_name = 'Объявление'
         ordering = ['-published']
+
 
 
 class Rubric(models.Model):
@@ -30,7 +32,7 @@ class Rubric(models.Model):
 
 # Модель для нескольких изображений
 class BbImage(models.Model):
-    bb = models.ForeignKey(Bb, on_delete=models.CASCADE, verbose_name='Объявление')  # Связь с Bb
+    bb = models.ForeignKey(Bb, on_delete=models.CASCADE, related_name='images')  # related_name важно!  # Связь с Bb
     image = models.ImageField(upload_to='Bb_images/', verbose_name='Изображение')
 
     class Meta:
