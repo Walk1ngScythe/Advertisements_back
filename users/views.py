@@ -6,21 +6,54 @@ from rest_framework.utils import timezone
 from rest_framework.views import APIView
 from django.utils import timezone
 from datetime import timedelta
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import CustomUser
-from .serializers import UserSerializer, PublicUserSerializer, LoginSerializer
+from .models import CustomUser, Review
+from .serializers import UserSerializer, PublicUserSerializer, LoginSerializer, ReviewSerializer
 from rest_framework.decorators import action, api_view
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from .renders import UserJSONRenderer
 from .authentication import CookieJWTAuthentication  # Импорт кастомной аутентификации
 
+
 class UserList(viewsets.ReadOnlyModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        seller_id = self.kwargs.get('seller_id')  # Достаем ID продавца из URL
+        if seller_id:
+            return Review.objects.filter(seller_id=seller_id)
+        return Review.objects.all()  # Если ID не указан, отдаем все отзывы
+
+class UserProfile(viewsets.ReadOnlyModelViewSet):  # Только для чтения (GET-запросы)
+    serializer_class = PublicUserSerializer
+    queryset = CustomUser.objects.all()
+    lookup_field = 'id'  # Будем искать по `id`
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('id')  # Получаем ID из URL
+        if user_id:
+            return CustomUser.objects.filter(id=user_id)  # Возвращаем конкретного пользователя
+        return CustomUser.objects.none()  # Если ID нет, вернём пустой QuerySet
+
+
+class GetUserRoleView(APIView):
+    permission_classes = [IsAuthenticated]  # Только для аутентифицированных пользователей
+    authentication_classes = [CookieJWTAuthentication]  # Используем JWT для аутентификации
+
+    def get(self, request):
+        user = request.user  # Получаем аутентифицированного пользователя
+
+        # Если поле role - это объект, то возвращаем его строковое представление
+        role = str(user.role) if user.role else "No Role"
+
+        return Response({"role": role})  # Возвращаем роль как строку
+
 
 class MyAccount(viewsets.ModelViewSet):
-    serializer_class = PublicUserSerializer
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [CookieJWTAuthentication]  # Используем кастомную аутентификацию
 
@@ -29,9 +62,6 @@ class MyAccount(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'], url_path='profile')
     def profile(self, request):
-        print(request.META.get('HTTP_AUTHORIZATION'))
-        print(request.headers)
-        print(request.COOKIES)
         user = self.request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data)
@@ -144,13 +174,5 @@ class auth(APIView):
             samesite='None'
         )
 
-        response.set_cookie(
-            key='role',
-            value=str(user.role),
-            expires=timezone.now() + timedelta(days=1),
-            httponly=True,
-            secure=True,
-            samesite='None'
-        )
         return response
 

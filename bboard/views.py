@@ -1,30 +1,37 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from .filtres import AdvFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Bb, Rubric
 from .serializers import BbSerializer, RubricSerializer
-
-
-
+from django.db.models import Q, F
 
 
 class BbViewSet(viewsets.ModelViewSet):
     serializer_class = BbSerializer
     queryset = Bb.objects.all()
-    http_method_names = ['get']  # Только метод GET разрешен для этого ViewSet
+    http_method_names = ['get']  # Только метод GET разрешен
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = AdvFilter
+    pagination_class = None
 
     def get_queryset(self):
-        query = self.request.GET.get('query', '')
-        rubric_id = self.request.GET.get('rubric', None)
-
         queryset = Bb.objects.all()
-
-        if query:
-            queryset = queryset.filter(title__icontains=query)
-
-        if rubric_id:
-            queryset = queryset.filter(rubric_id=rubric_id)
-
+        author_id = self.request.GET.get('author', None)
+        if author_id and author_id.isdigit():
+            queryset = queryset.filter(author_id=int(author_id))
         return queryset
+
+
+
+    def retrieve(self, request, *args, **kwargs):
+        """Переопределяем метод retrieve, чтобы увеличивать просмотры"""
+        instance = self.get_object()
+        Bb.objects.filter(id=instance.id).update(views=F('views') + 1)  # Увеличиваем просмотры
+        instance.refresh_from_db()  # Обновляем объект из БД
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
 
 
 class RubricViewSet(viewsets.ModelViewSet):
