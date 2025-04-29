@@ -53,7 +53,7 @@ class GetUserRoleView(APIView):
 
 
 class MyAccount(viewsets.ModelViewSet):
-    serializer_class = PublicUserSerializer
+    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [CookieJWTAuthentication]  # Используем кастомную аутентификацию
 

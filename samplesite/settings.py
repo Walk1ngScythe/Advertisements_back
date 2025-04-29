@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'сomplaints',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
