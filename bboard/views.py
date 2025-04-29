@@ -14,6 +14,7 @@ class BbViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         query = self.request.GET.get('query', '').strip()  # Убираем пробелы
         rubric_id = self.request.GET.get('rubric', None)
+        author_id = self.request.GET.get('author', None)  # Новый параметр для фильтрации по автору
 
         queryset = Bb.objects.all()
 
@@ -29,7 +30,12 @@ class BbViewSet(viewsets.ModelViewSet):
         if rubric_id and rubric_id.isdigit():  # Проверяем, что rubric_id — число
             queryset = queryset.filter(rubric_id=int(rubric_id))
 
+        # Фильтрация по автору
+        if author_id and author_id.isdigit():  # Проверяем, что author_id — число
+            queryset = queryset.filter(author_id=int(author_id))
+
         return queryset
+
 
     def retrieve(self, request, *args, **kwargs):
         """Переопределяем метод retrieve, чтобы увеличивать просмотры"""

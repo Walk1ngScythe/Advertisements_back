@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'bboard',
     'corsheaders',
     'users',
+    'сomplaints',
     'rest_framework',
     'rest_framework_simplejwt',
 ]

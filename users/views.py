@@ -12,7 +12,7 @@ from rest_framework.decorators import action, api_view
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from .renders import UserJSONRenderer
 from .authentication import CookieJWTAuthentication  # Импорт кастомной аутентификации
-from rest_framework.permissions import BasePermission
+
 
 class UserList(viewsets.ReadOnlyModelViewSet):
     queryset = CustomUser.objects.all()
@@ -27,6 +27,16 @@ class ReviewViewSet(viewsets.ModelViewSet):
             return Review.objects.filter(seller_id=seller_id)
         return Review.objects.all()  # Если ID не указан, отдаем все отзывы
 
+class UserProfile(viewsets.ReadOnlyModelViewSet):  # Только для чтения (GET-запросы)
+    serializer_class = PublicUserSerializer
+    queryset = CustomUser.objects.all()
+    lookup_field = 'id'  # Будем искать по `id`
+
+    def get_queryset(self):
+        user_id = self.kwargs.get('id')  # Получаем ID из URL
+        if user_id:
+            return CustomUser.objects.filter(id=user_id)  # Возвращаем конкретного пользователя
+        return CustomUser.objects.none()  # Если ID нет, вернём пустой QuerySet
 
 
 class GetUserRoleView(APIView):
@@ -52,9 +62,6 @@ class MyAccount(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'], url_path='profile')
     def profile(self, request):
-        print(request.META.get('HTTP_AUTHORIZATION'))
-        print(request.headers)
-        print(request.COOKIES)
         user = self.request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data)

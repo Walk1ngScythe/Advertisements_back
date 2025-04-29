@@ -39,4 +39,14 @@ class BbImage(models.Model):
         verbose_name_plural = 'Изображения'
         verbose_name = 'Изображение'
 
+class Favorite(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Пользователь')  # Добавляем автора
+    bb = models.ForeignKey(Bb, on_delete=models.CASCADE, verbose_name='Объявление')  # Добавляем автора
+
+
+    class Meta:
+        verbose_name = "Избранное"
+        verbose_name_plural = "Избранные"
+
+
 
