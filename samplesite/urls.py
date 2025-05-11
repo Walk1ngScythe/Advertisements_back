@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('bboard.urls')),
     path('api/v1/', include('users.urls')),
+    path('api/v1/', include('сomplaints.urls')),
 
     # Используем кастомный View для получения токенов
     path('api/v1/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
