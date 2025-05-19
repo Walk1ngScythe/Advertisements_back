@@ -11,7 +11,7 @@ class RubricSerializer(serializers.ModelSerializer):
 class BbImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = BbImage
-        fields = ['id', 'image']  # Поля изображения
+        fields = ['id', 'bb', 'image']  # ← Должно быть 'bb' тоже
 
 class BbAuthorSerializer(serializers.ModelSerializer):
     company = CompanySerializer(many=False, read_only=True)
@@ -33,6 +33,7 @@ class BbSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'content', 'price', 'published',
             'rubric', 'rubric_info', 'main_image', 'images',
-            'author', 'views'
+            'author', 'views', 'is_deleted'  # добавлено
         ]
-        read_only_fields = ['views', 'author']
+        read_only_fields = ['views', 'author', 'is_deleted']  # если нельзя редактировать
+
