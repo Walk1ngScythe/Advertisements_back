@@ -10,14 +10,13 @@ class Bb(models.Model):
     rubric = models.ForeignKey('Rubric', null=True, on_delete=models.PROTECT, verbose_name='Рубрика')
     main_image = models.ImageField(upload_to='Bb_images/', null=True, blank=True, verbose_name='Изображение')
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор')
-    views = models.PositiveIntegerField(default=0, verbose_name='Просмотры')  # Добавлено поле
+    views = models.PositiveIntegerField(default=0, verbose_name='Просмотры')
+    is_deleted = models.BooleanField(default=False, verbose_name='Удалено')  # Новое поле
 
     class Meta:
         verbose_name_plural = 'Объявления'
         verbose_name = 'Объявление'
         ordering = ['-published']
-
-
 
 class Rubric(models.Model):
     name = models.CharField(max_length=20, db_index=True, verbose_name='Название')

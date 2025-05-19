@@ -11,7 +11,7 @@ class RubricSerializer(serializers.ModelSerializer):
 class BbImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = BbImage
-        fields = ['id', 'image']  # Поля изображения
+        fields = ['id', 'bb', 'image']  # ← Должно быть 'bb' тоже
 
 class BbAuthorSerializer(serializers.ModelSerializer):
     company = CompanySerializer(many=False, read_only=True)
@@ -20,11 +20,20 @@ class BbAuthorSerializer(serializers.ModelSerializer):
         fields = ['id','first_name', 'last_name', 'rating','company', 'avatar', 'phone_number']  # Информация о пользователе-авторе
 
 class BbSerializer(serializers.ModelSerializer):
-    rubric = RubricSerializer(many=False, read_only=True)
+    rubric = serializers.PrimaryKeyRelatedField(
+        queryset=Rubric.objects.all(), write_only=True
+    )
+    rubric_info = RubricSerializer(source='rubric', read_only=True)
+
     images = BbImageSerializer(many=True, read_only=True)
-    author = BbAuthorSerializer(many=False, read_only=True)
+    author = BbAuthorSerializer(read_only=True)
 
     class Meta:
         model = Bb
-        fields = ['id', 'title', 'content', 'price', 'published', 'rubric', 'main_image', 'images', 'author', 'views']
-        read_only_fields = ['views']  # Поле просмотров только для чтения
+        fields = [
+            'id', 'title', 'content', 'price', 'published',
+            'rubric', 'rubric_info', 'main_image', 'images',
+            'author', 'views', 'is_deleted'  # добавлено
+        ]
+        read_only_fields = ['views', 'author', 'is_deleted']  # если нельзя редактировать
+
