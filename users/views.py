@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from django.utils import timezone
 from datetime import timedelta
 from .models import CustomUser, Review
-from .serializers import UserSerializer, PublicUserSerializer, LoginSerializer, ReviewSerializer
+from .serializers import UserSerializer, PublicUserSerializer, LoginSerializer, ReviewSerializer, RegisterSerializer
 from rest_framework.decorators import action, api_view
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from .renders import UserJSONRenderer
@@ -65,6 +65,20 @@ class MyAccount(viewsets.ModelViewSet):
         user = self.request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "message": "Пользователь успешно зарегистрирован",
+                "user_id": user.id,
+                "phone_number": user.phone_number
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

@@ -73,3 +73,29 @@ class LoginSerializer(serializers.Serializer):
 
         return {'user': user}
 
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+    avatar = serializers.ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'password', 'avatar']
+
+    def create(self, validated_data):
+        from .models import Role  # Импортируем здесь, чтобы избежать проблем с зависимостями
+        role = Role.objects.get_or_create(name="Покупатель")[0]
+
+        avatar = validated_data.pop('avatar', None)  # достаём аватар, если есть
+
+        user = CustomUser.objects.create_user(
+            email=validated_data['email'],
+            phone_number=validated_data['phone_number'],
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            role=role,
+            avatar=avatar
+        )
+        return user
+
+

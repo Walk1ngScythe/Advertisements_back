@@ -90,3 +90,15 @@ class Review(models.Model):
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
         ordering = ['-created_at']
+
+class SellerApplication(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    company_name = models.CharField(max_length=100)
+    company_description = models.TextField(blank=True)
+    documents = models.FileField(upload_to="company_docs/")
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'На рассмотрении'),
+        ('approved', 'Одобрена'),
+        ('rejected', 'Отклонена'),
+    ], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
