@@ -85,14 +85,14 @@ SIMPLE_JWT = {
         "ACCESS_TOKEN": {
             "key": "access_token",
             "httponly": True,
-            "secure": True,
-            "samesite": "Strict",
+            "secure": False,
+            "samesite": "Lax",
         },
         "REFRESH_TOKEN": {
             "key": "refresh_token",
             "httponly": True,
-            "secure": True,
-            "samesite": "Strict",
+            "secure": False,
+            "samesite": "Lax",
         },
     },
 }
