@@ -1,4 +1,5 @@
 from rest_framework import generics, status, viewsets, serializers
+from .models import Review
 from .serializers import ReviewSerializer
 
 

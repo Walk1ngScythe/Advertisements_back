@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from .base_auth import CookieJWTAuthentication
 from .serializers import RegistrationSerializer, LoginSerializer
+from adv_core.utils import build_absolute_uri
 
 
 class CheckAuthAPIView(APIView):
@@ -22,9 +23,14 @@ class CheckAuthAPIView(APIView):
             "last_name": user.last_name,
             "email": user.email,
             "phone_number": user.phone_number,
-            "role": user.role.name,
-            "company_id": user.company.id if user.company else None,
-            "avatar": user.avatar.url if user and user.avatar else None,
+            "role": user.role.name if user.role else None,
+            "registration_date": user.registration_date,
+            "rating": user.rating,
+            "company": {
+                "id": user.company.id,
+                "name": user.company.name,
+            } if user.company else None,
+            "avatar": request.build_absolute_uri(user.avatar.url) if user and user.avatar else None,
         })
 
 
@@ -38,7 +44,7 @@ class TokenRefreshView(APIView):
             refresh = RefreshToken(refresh_token)
             access_token = refresh.access_token
 
-            response = Response(status=status.HTTP_204_NO_CONTENT)
+            response = Response({"detail": "Token refreshed"}, status=status.HTTP_200_OK)
             cookie_settings = settings.SIMPLE_JWT["COOKIE_SETTINGS"]["ACCESS_TOKEN"]
 
             response.set_cookie(
