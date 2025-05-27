@@ -62,6 +62,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Компания")
+    is_deleted = models.BooleanField(default=False, verbose_name='Удалено')  # Новое поле
 
     USERNAME_FIELD = 'phone_number'  # Используем номер телефона в качестве имени пользователя
     REQUIRED_FIELDS = ['email']  # Остальные обязательные поля при создании суперпользователя

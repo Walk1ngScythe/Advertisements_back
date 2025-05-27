@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from .models import CustomUser, Role, Company
+from .models import CustomUser, Role, Company, SellerApplication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
 
@@ -38,3 +38,9 @@ class PublicUserSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'phone_number', 'email',
             'registration_date', 'rating', 'avatar', 'company'
         ]
+
+class SellerApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SellerApplication
+        fields = '__all__'
+        read_only_fields = ['status', 'created_at', 'user']

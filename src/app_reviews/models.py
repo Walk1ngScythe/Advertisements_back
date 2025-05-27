@@ -10,6 +10,7 @@ class Review(models.Model):
     rating = models.PositiveSmallIntegerField(verbose_name="Оценка", choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField(verbose_name="Комментарий")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата отзыва")
+    is_deleted = models.BooleanField(default=False, verbose_name='Удалено')  # Новое поле
 
     def __str__(self):
         return f"Отзыв от {self.author} для {self.seller} - {self.rating}⭐"

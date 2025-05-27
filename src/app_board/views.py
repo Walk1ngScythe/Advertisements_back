@@ -19,7 +19,7 @@ class BbViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = AdvFilter
     pagination_class = None
-    queryset = Bb.objects.filter(is_deleted=False)
+    queryset = Bb.objects.all()
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -46,6 +46,11 @@ class BbEditViewSet(BaseEditViewSet):
         if not user or not user.is_authenticated:
             raise ValidationError("Вы не авторизованы")
         serializer.save(author=user)
+
+    def perform_destroy(self, instance):
+        # Проверка прав делегируется AuthorOrAdminPermission
+        instance.is_deleted = True
+        instance.save()
 
 
 class RubricViewSet(viewsets.ModelViewSet):

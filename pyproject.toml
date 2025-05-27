@@ -16,7 +16,7 @@ django-cors-headers = "^4.4.0"
 django-filter = "25.1"
 python-dotenv = "^1.0.1"
 pillow = "11.2.1"
-psycopg2 = "^2.9.9"
+psycopg2 = "^2.9.10"
 setuptools = "80.8.0"
 
 [tool.poetry.group.dev.dependencies]

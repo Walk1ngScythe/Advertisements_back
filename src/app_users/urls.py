@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 from django.urls import path
-from .views import MyAccount, UserList, UserProfile
+from .views import MyAccount, UserList, UserProfile, SellerApplicationCreateView, SellerApplicationDetailView
 
 router = DefaultRouter()
 
@@ -9,4 +9,6 @@ router.register(r'users/list', UserList, basename='list')
 
 urlpatterns = router.urls + [
     path('users/profile/<int:id>/', UserProfile.as_view({'get': 'list'}), name='user-profile'),
+    path('applications/create/', SellerApplicationCreateView.as_view(), name='create-application'),
+    path('applications/<int:pk>/', SellerApplicationDetailView.as_view(), name='detail-application'),
 ]

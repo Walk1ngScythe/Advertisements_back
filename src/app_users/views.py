@@ -13,8 +13,8 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from app_auth.serializers import LoginSerializer, RegistrationSerializer
 from app_auth.base_auth import CookieJWTAuthentication
 
-from .models import CustomUser
-from .serializers import UserSerializer, PublicUserSerializer
+from .models import CustomUser, SellerApplication
+from .serializers import UserSerializer, PublicUserSerializer, SellerApplicationSerializer
 
 
 class UserList(viewsets.ReadOnlyModelViewSet):
@@ -72,3 +72,22 @@ def logout(request):
         response.delete_cookie(cookie, path='/')  # Удаляем куку по имени
 
     return response
+
+class SellerApplicationCreateView(generics.CreateAPIView):
+    queryset = SellerApplication.objects.all()
+    serializer_class = SellerApplicationSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class SellerApplicationDetailView(generics.RetrieveAPIView):
+    queryset = SellerApplication.objects.all()
+    serializer_class = SellerApplicationSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get_queryset(self):
+        # Ограничим просмотр: пользователь видит только свою заявку
+        return self.queryset.filter(user=self.request.user)
