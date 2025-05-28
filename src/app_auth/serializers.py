@@ -1,7 +1,9 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
-from app_users.models import CustomUser
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+
+from app_users.models import CustomUser
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -64,7 +66,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'password', 'avatar']
 
     def create(self, validated_data):
-        from .models import Role  # Импортируем здесь, чтобы избежать проблем с зависимостями
+        from app_users.models import Role  # Импортируем здесь, чтобы избежать проблем с зависимостями
         role = Role.objects.get_or_create(name="Покупатель")[0]
 
         avatar = validated_data.pop('avatar', None)  # достаём аватар, если есть

@@ -10,6 +10,9 @@ class AuthorOrAdminPermission(BasePermission):
         return request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
+        role_name = getattr(request.user.role, "name", "")
         is_author = obj.author == request.user
-        is_admin = getattr(request.user.role, "role", "") in ["admin", "superadmin"]
+        is_admin = role_name in ["admin", "superadmin"]
+        print(f"DEBUG:: Author? {is_author} | Admin? {is_admin} | Role: {role_name}")
         return is_author or is_admin
+

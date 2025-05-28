@@ -47,10 +47,18 @@ class BbEditViewSet(BaseEditViewSet):
             raise ValidationError("Вы не авторизованы")
         serializer.save(author=user)
 
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        print("DEBUG:: USER =", self.request.user)
+        print("DEBUG:: ROLE =", getattr(self.request.user.role, "name", None))
+        self.check_object_permissions(self.request, instance)
+        serializer.save()
+
     def perform_destroy(self, instance):
-        # Проверка прав делегируется AuthorOrAdminPermission
+        self.check_object_permissions(self.request, instance)
         instance.is_deleted = True
         instance.save()
+
 
 
 class RubricViewSet(viewsets.ModelViewSet):
@@ -69,3 +77,13 @@ class BbImageViewSet(viewsets.ModelViewSet):
         if not Bb.objects.filter(id=bb_id).exists():
             raise ValidationError("Объявление не найдено")
         serializer.save()
+
+    def update(self, instance, validated_data):
+        images_data = self.context['request'].data.getlist('images')  # если multipart/form-data
+        if images_data:
+            # Удалим старые изображения
+            instance.images.all().delete()
+            # Добавим новые
+            for img in images_data:
+                BbImage.objects.create(bb=instance, image=img)
+        return super().update(instance, validated_data)
