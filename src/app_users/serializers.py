@@ -22,11 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id',
-                  'first_name', 'last_name', 'phone_number', 'email', 'registration_date',
-                  'rating', 'avatar', 'company', 'role'
-                  ]
-        read_only_fields = 'token'
+        fields = [
+            'id', 'first_name', 'last_name', 'phone_number', 'email',
+            'registration_date', 'rating', 'avatar', 'company', 'role'
+        ]
+        read_only_fields = ('token',)
 
 
 class PublicUserSerializer(serializers.ModelSerializer):

@@ -15,6 +15,57 @@ from app_auth.base_auth import CookieJWTAuthentication
 
 from .models import CustomUser, SellerApplication
 from .serializers import UserSerializer, PublicUserSerializer, SellerApplicationSerializer
+from app_auth.base_permissions import BaseEditUserViewSet
+
+
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
+
+class UserProfileEditViewSet(BaseEditUserViewSet):
+    authentication_classes = [CookieJWTAuthentication]
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'id'
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def change_password(self, request, id=None):
+        user = self.get_object()
+
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        new_password_confirm = request.data.get('new_password_confirm')
+
+        if not old_password or not new_password or not new_password_confirm:
+            return Response({"detail": "Все поля обязательны: old_password, new_password, new_password_confirm"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(old_password):
+            return Response({"detail": "Старый пароль неверен"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if new_password != new_password_confirm:
+            return Response({"detail": "Новый пароль и подтверждение не совпадают"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            validate_password(new_password, user)
+        except ValidationError as e:
+            return Response({"detail": e.messages}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "Пароль успешно изменён"}, status=status.HTTP_200_OK)
+
 
 
 class UserList(viewsets.ReadOnlyModelViewSet):
