@@ -27,9 +27,9 @@ WORKDIR /app
 COPY --from=builder /app /app
 RUN groupadd -r appuser && useradd -r -g appuser -d /app appuser
 ENV PATH="/app/.venv/bin:$PATH"
-ENV DJANGO_SETTINGS_MODULE=samplesite.settings
+ENV DJANGO_SETTINGS_MODULE=adv_core.settings
 ENV MEDIA_ROOT=/app/media
 RUN install -o appuser -g appuser -d $MEDIA_ROOT
 USER appuser
 EXPOSE 8000/tcp
-CMD ["gunicorn", "--bind=0.0.0.0:8000", "samplesite.wsgi"]
+CMD ["gunicorn", "--bind=0.0.0.0:8000", "adv_core.wsgi"]
